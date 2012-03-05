@@ -1,8 +1,4 @@
---
--- Table structure for table `airmail`
---
-
-CREATE TABLE IF NOT EXISTS `airmail` (
+CREATE TABLE IF NOT EXISTS `phpvms_airmail` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `who_to` varchar(20) NOT NULL,
   `who_from` varchar(20) NOT NULL,
@@ -20,28 +16,16 @@ CREATE TABLE IF NOT EXISTS `airmail` (
   FULLTEXT KEY `subject` (`subject`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;
 
--- --------------------------------------------------------
-
---
--- Table structure for table `airmail_email`
---
-
-CREATE TABLE IF NOT EXISTS `airmail_email` (
+CREATE TABLE IF NOT EXISTS `phpvms_airmail_email` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `pilot_id` int(11) NOT NULL,
   `email` int(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;
 
--- --------------------------------------------------------
-
---
--- Table structure for table `airmail_folders`
---
-
-CREATE TABLE IF NOT EXISTS `airmail_folders` (
+CREATE TABLE IF NOT EXISTS `phpvms_airmail_folders` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `pilot_id` int(11) NOT NULL,
   `folder_title` varchar(50) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;

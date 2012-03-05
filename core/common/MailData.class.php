@@ -14,7 +14,7 @@ class MailData extends CodonData {
 
     public static function getallmail($pid) {
         $query = "SELECT *
-                FROM   airmail
+                FROM   ".TABLE_PREFIX."airmail
                 WHERE who_to='$pid'
                 AND deleted_state='0'
                 AND receiver_folder='0'
@@ -25,7 +25,7 @@ class MailData extends CodonData {
 
     public static function get_unopen_count($pid) {
         $query = "SELECT COUNT(*) AS total
-                FROM   airmail
+                FROM   ".TABLE_PREFIX."airmail
                 WHERE who_to='$pid'
                 AND deleted_state='0'
                 AND read_state='0'";
@@ -36,7 +36,7 @@ class MailData extends CodonData {
 
     public static function getsentmail($pid) {
         $query = "SELECT *
-                FROM   airmail
+                FROM   ".TABLE_PREFIX."airmail
                 WHERE who_from='$pid'
                 AND sent_state='0'
                 AND notam<'2'
@@ -46,7 +46,7 @@ class MailData extends CodonData {
     }
     
     public function send_new_mail($who_to, $who_from, $subject, $newmessage, $notam, $thread_id) {
-        $sql="INSERT INTO airmail (who_to, who_from, date, subject, message, notam, thread_id)
+        $sql="INSERT INTO ".TABLE_PREFIX."airmail (who_to, who_from, date, subject, message, notam, thread_id)
 			VALUES ('$who_to', '$who_from', NOW(), '$subject', '$newmessage', '$notam', '$thread_id')";
                 
         DB::query($sql);
@@ -54,7 +54,7 @@ class MailData extends CodonData {
     
     //check to see if pilot wants email sent when new message arrives
     public function send_email($pid)    {
-        $query = "SELECT email FROM airmail_email WHERE pilot_id='$pid'";
+        $query = "SELECT email FROM ".TABLE_PREFIX."airmail_email WHERE pilot_id='$pid'";
         
         $result = DB::get_row($query);
         if($result->email == 1)
@@ -65,14 +65,14 @@ class MailData extends CodonData {
     
     //remove email setting
     public function remove_email_setting($pid)  {
-        $query = "DELETE FROM airmail_email WHERE pilot_id='$pid'";
+        $query = "DELETE FROM ".TABLE_PREFIX."airmail_email WHERE pilot_id='$pid'";
         
         DB::query($query);
     }
     
     //set email pilot setting
     public function set_email_setting($pid) {
-        $query = "INSERT INTO airmail_email (pilot_id, email) VALUES ('$pid', '1')";
+        $query = "INSERT INTO ".TABLE_PREFIX."airmail_email (pilot_id, email) VALUES ('$pid', '1')";
         
         DB::query($query);
     }
@@ -80,11 +80,11 @@ class MailData extends CodonData {
     public static function deletemailitem($mailid) {
         $pid = Auth::$userinfo->pilotid;
         $sql = "SELECT *
-                FROM   airmail
+                FROM   ".TABLE_PREFIX."airmail
                 WHERE id='$mailid'
                 AND who_to='$pid'";
 
-        $upd = "UPDATE airmail SET deleted_state=1, read_state=1 WHERE id='$mailid'";
+        $upd = "UPDATE ".TABLE_PREFIX."airmail SET deleted_state=1, read_state=1 WHERE id='$mailid'";
 
         DB::query($upd);
 
@@ -93,13 +93,13 @@ class MailData extends CodonData {
     
     //delete a pilots messages from inbox and foldersviews
     function delete_inbox($pid, $folderid) {
-        $query = "UPDATE airmail SET read_state=1, deleted_state=1 WHERE who_to='$pid' AND receiver_folder='$folderid'";
+        $query = "UPDATE ".TABLE_PREFIX."airmail SET read_state=1, deleted_state=1 WHERE who_to='$pid' AND receiver_folder='$folderid'";
         DB::query($query);
     }
     
     //delete a pilots sent messages from view
     function delete_sentbox($pid) {
-        $query = "UPDATE airmail SET sent_state=1 WHERE who_from='$pid'";
+        $query = "UPDATE ".TABLE_PREFIX."airmail SET sent_state=1 WHERE who_from='$pid'";
         DB::query($query);
     }
 
@@ -107,12 +107,12 @@ class MailData extends CodonData {
     public static function deletesentmailitem($mailid) {
         $pid = Auth::$userinfo->pilotid;
         $sql = "SELECT *
-                FROM   airmail
+                FROM   ".TABLE_PREFIX."airmail
                 WHERE id='$mailid'
                 AND who_from='$pid'
             ";
 
-        $upd = "UPDATE airmail SET sent_state=1 WHERE id='$mailid'";
+        $upd = "UPDATE ".TABLE_PREFIX."airmail SET sent_state=1 WHERE id='$mailid'";
 
         DB::query($upd);
 
@@ -122,12 +122,12 @@ class MailData extends CodonData {
     public static function getmailcontent($thread_id) {
         $pid = Auth::$userinfo->pilotid;
         $sql = "SELECT *
-                FROM airmail
+                FROM ".TABLE_PREFIX."airmail
                 WHERE thread_id='$thread_id'
                 AND who_to = '$pid'
                 ORDER BY id ASC
             ";
-        $upd = "UPDATE airmail SET read_state=1 WHERE thread_id='$thread_id' AND who_to='$pid'";
+        $upd = "UPDATE ".TABLE_PREFIX."airmail SET read_state=1 WHERE thread_id='$thread_id' AND who_to='$pid'";
 
         DB::query($upd);
         
@@ -136,7 +136,7 @@ class MailData extends CodonData {
     public static function checkformail() {
         $pid = Auth::$userinfo->pilotid;
         $query = "SELECT COUNT(*) AS total
-                FROM airmail
+                FROM ".TABLE_PREFIX."airmail
                 WHERE read_state=0
                 AND who_to='$pid'";
 
@@ -145,14 +145,14 @@ class MailData extends CodonData {
 
     public function savenewfolder($folder_title) {
         $pilot_id = Auth::$userinfo->pilotid;
-        $query ="INSERT INTO airmail_folders (pilot_id, folder_title)
+        $query ="INSERT INTO ".TABLE_PREFIX."airmail_folders (pilot_id, folder_title)
                     VALUES ('$pilot_id', '$folder_title')";
         DB::query($query);
     }
 
     public function checkforfolders($pid)   {
         $query = "SELECT *
-                    FROM airmail_folders
+                    FROM ".TABLE_PREFIX."airmail_folders
                     WHERE pilot_id='$pid'
                     ORDER BY folder_title ASC";
 
@@ -161,7 +161,7 @@ class MailData extends CodonData {
 
     public function getfoldercontents($id)  {
         $query = "SELECT *
-                    FROM airmail_folders
+                    FROM ".TABLE_PREFIX."airmail_folders
                     WHERE id='$id'";
 
         return DB::get_row($query);
@@ -170,7 +170,7 @@ class MailData extends CodonData {
     public function getfoldermail($id)  {
         $pid = Auth::$userinfo->pilotid;
         $query = "SELECT *
-                FROM   airmail
+                FROM   ".TABLE_PREFIX."airmail
                 WHERE who_to='$pid'
                 AND deleted_state='0'
                 AND receiver_folder='$id'
@@ -180,30 +180,30 @@ class MailData extends CodonData {
     }
 
     public function movemail($mail_id, $folder)  {
-        $upd = "UPDATE airmail SET receiver_folder='$folder' WHERE id='$mail_id'";
+        $upd = "UPDATE ".TABLE_PREFIX."airmail SET receiver_folder='$folder' WHERE id='$mail_id'";
 
         DB::query($upd);
     }
 
     public function deletefolder($folder_id)    {
-        $upd = "UPDATE airmail SET receiver_folder='0' WHERE reciever_folder='$folder_id'";
+        $upd = "UPDATE ".TABLE_PREFIX."airmail SET receiver_folder='0' WHERE reciever_folder='$folder_id'";
 
         DB::query($upd);
 
-        $query2 = "DELETE FROM airmail_folders
+        $query2 = "DELETE FROM ".TABLE_PREFIX."airmail_folders
                 WHERE id='$folder_id'";
 
         DB::query($query2);
     }
 
     public function editfolder($folder_id, $folder_title)   {
-        $upd = "UPDATE airmail_folders SET folder_title='$folder_title' WHERE id='$folder_id'";
+        $upd = "UPDATE ".TABLE_PREFIX."airmail_folders SET folder_title='$folder_title' WHERE id='$folder_id'";
 
         DB::query($upd);
     }
     
     public function getprofilemail($pilotid)    {
-        $query = "SELECT * FROM airmail WHERE who_to='$pilotid' ORDER BY date DESC LIMIT 2";
+        $query = "SELECT * FROM ".TABLE_PREFIX."airmail WHERE who_to='$pilotid' ORDER BY date DESC LIMIT 2";
         
         return DB::get_results($query);
     }

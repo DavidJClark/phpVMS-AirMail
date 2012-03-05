@@ -28,11 +28,19 @@ New Features:
 -Individual pilot setting to have email sent to pilot when new message is received
 -Threaded messages
 
-Install:
+Install Using Simpilotgroup Plugin Manager
 
--Download the attached package.
--unzip the package and place the files as structured in your root phpVMS install.
--use the airmail.sql file to create the tables needed in your sql database using phpmyadmin or similar.
+-Download the package
+-Upload the package to your site using the plugin manager
+-Use the auto-install from the plugin manager
+
+Install Manually:
+
+-Download the package.
+-Unzip the package and place the files as structured in your root phpVMS install.
+-Use the airmail.sql file to create the tables needed in your sql database using phpmyadmin or similar.
+
+Options:
 
 To Use the "You Have Mail" function place the following code where you would like the notice to appear, it will only appear if the pilot is logged in.
 

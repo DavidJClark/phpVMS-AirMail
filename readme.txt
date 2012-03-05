@@ -5,9 +5,14 @@ phpVMS module to create a messaging system your phpVMS based virtual airline.
 Released under the following license:
 Creative Commons Attribution-Noncommercial-Share Alike 3.0 Unported License
 
+----------------------------------------------
+A visible link to http://www.simpilotgroup.com must be provided on any site utilizing this script for the license to be valid.
+----------------------------------------------
+
 Developed by:
-simpilot
+simpilot - David Clark
 www.simpilotgroup.com
+www.david-clark.net
 
 Developed on:
 phpVMS v2.1.934-158

@@ -25,7 +25,7 @@
                     <td align="center"><b>Subject: <?php echo $data->subject; ?></b></td>
                 </tr>
                 <tr bgcolor="#eeeeee">
-                    <td colspan="4" align="left"><b>Message:</b><br /><br /><?php echo $data->message; ?><br /></td>
+                    <td colspan="4" align="left"><b>Message:</b><br /><br /><?php echo nl2br($data->message); ?><br /></td>
                 </tr>
 
             <?php

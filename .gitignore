@@ -1,0 +1,17 @@
+preparecommit
+core/local.config.php.old
+core/logs/errors.txt
+core/pages/*
+core/cache/*
+core/local.config.php
+core/logs/*
+lib/signatures/*
+lib/avatars/*
+lib/rss/*
+core/modules/test
+core/modules/test/**
+mobile
+lib/rss/latestpireps.rss
+unittest/reports/**
+unittest/web
+nbproject/

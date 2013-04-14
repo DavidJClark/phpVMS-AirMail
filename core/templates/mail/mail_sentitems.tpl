@@ -29,28 +29,35 @@
                 <th>Remove</th>
             </tr>
     <?php
-        foreach($mail as $test) {
-            if ($test->read_state=='0') {
-                $status = 'env_closed.gif ';
+        foreach($mail as $thread){
+            if($thread->read_state=='0'){
+                if($thread->deleted_state == '0'){
+                    $status = 'env_closed.gif" alt="The recipiant has not read your message.';
+                }else{
+                    $status = 'env_closed_deleted.gif" alt="The recipiant did not read this message before deleting it.';
+                }
+            }else{
+                if($thread->deleted_state == '0'){
+                    $status = 'env_open.gif" alt="The recipiant has read your message.';
+                }else{
+                    $status = 'env_open_deleted.gif" alt="The recipiant has read and discarded your message.';
+                }
             }
-            else {
-                $status = 'env_open.gif';
-            }
-            $user = PilotData::GetPilotData($test->who_to); $pilot = PilotData::GetPilotCode($user->code, $test->who_to);
+            $user = PilotData::GetPilotData($thread->who_to); $pilot = PilotData::GetPilotCode($user->code, $thread->who_to);
     ?>
             <tr>
                 <td align="center"><img src="<?php echo SITE_URL?>/core/modules/Mail/mailimages/<?php echo $status;?>" border="0" /></td>
                 <td align="center"><?php
-                    if ($test->notam=='1') {
+                    if ($thread->notam=='1') {
                         echo 'NOTAM (All Pilots)';
                     }
                     else {
                         echo $user->firstname.' '.$user->lastname; ?> <?php echo $pilot;
                     } ?>
                 </td>
-                <td align="center"><?php echo $test->subject; ?></td>
-                <td align="center"><?php echo date(DATE_FORMAT.' h:ia', strtotime($test->date)); ?></td>
-                <td align="center"><a href="<?php echo SITE_URL ?>/index.php/Mail/sent_delete/?mailid=<?php echo $test->id;?>"><img src="<?php echo SITE_URL?>/core/modules/Mail/mailimages\delete.gif" alt="Delete" border="0"/></a></td>
+            <td align="center"><a href="<?php echo SITE_URL ?>/index.php/Mail/item/<?php echo $thread->thread_id.'/'.$thread->who_to;?>"><?php echo $thread->subject; ?></a></td>
+                <td align="center"><?php echo date(DATE_FORMAT.' h:ia', strtotime($thread->date)); ?></td>
+                <td align="center"><a href="<?php echo SITE_URL ?>/index.php/Mail/sent_delete/?mailid=<?php echo $thread->id;?>"><img src="<?php echo SITE_URL?>/core/modules/Mail/mailimages/delete.gif" alt="Delete" border="0"/></a></td>
 
             </tr>
     <?php

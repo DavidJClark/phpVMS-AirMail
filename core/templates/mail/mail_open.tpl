@@ -17,15 +17,31 @@
         </tr>
         <?php
             foreach ($mail as $data) {
-                $user = PilotData::GetPilotData($data->who_from); $pilot = PilotData::GetPilotCode($user->code, $data->who_from);
-                ?>
+        ?>
                 <tr bgcolor="#cccccc">
-                    <td align="center"><b>From: <?php echo $user->firstname.' '. $user->lastname.' '.$pilot; ?></b></td>
+                    <td align="center">
+                        <b>
+                            <?php
+                                if($data->who_to == Auth::$userinfo->pilotid){
+                                    $user = PilotData::GetPilotData($data->who_from);
+                                    $pilot = PilotData::GetPilotCode($user->code, $data->who_from);
+                                    echo 'From: ';
+                                }
+                                if($data->who_from == Auth::$userinfo->pilotid){
+                                    $user = PilotData::GetPilotData($data->who_to);
+                                    $pilot = PilotData::GetPilotCode($user->code, $data->who_to);
+                                    echo 'To: ';
+                                }
+                                echo $user->firstname.' '. $user->lastname.' '.$pilot;
+                            ?>
+                        
+                        </b>
+                    </td>
                     <td align="center"><b><?php echo date(DATE_FORMAT.' h:ia', strtotime($data->date)); ?></b></td>
                     <td align="center"><b>Subject: <?php echo $data->subject; ?></b></td>
                 </tr>
                 <tr bgcolor="#eeeeee">
-                    <td colspan="4" align="left"><b>Message:</b><br /><br /><?php echo $data->message; ?><br /></td>
+                    <td colspan="4" align="left"><b>Message:</b><br /><br /><?php echo nl2br($data->message); ?><br /></td>
                 </tr>
 
             <?php

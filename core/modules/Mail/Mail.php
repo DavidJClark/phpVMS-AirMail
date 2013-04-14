@@ -18,27 +18,28 @@ class Mail extends CodonModule {
             $this->render('core_error.tpl');
             return;
         }
-        elseif($this->post->action == 'send') {
-            $this->send();
+        switch($this->post->action){
+            case 'savefolder':
+                $this->savefolder();
+                break;
+            case 'move':
+                $this->move();
+                break;
+            case 'confirm_delete_folder':
+                $this->confirm_delete_folder();
+                break;
+            case 'confirm_edit_folder':
+                $this->confirm_edit_folder();
+                break;
+            case 'save_settings':
+                $this->save_settings();
+                break;
+            case 'send':
+                $this->send();
+            default:
+                $this->inbox();
         }
-        elseif($this->post->action == 'savefolder') {
-            $this->savefolder();
-        }
-        elseif($this->post->action == 'move') {
-            $this->move();
-        }
-        elseif($this->post->action == 'confirm_delete_folder') {
-            $this->confirm_delete_folder();
-        }
-        elseif($this->post->action == 'confirm_edit_folder') {
-            $this->confirm_edit_folder();
-        }
-        elseif($this->post->action == 'save_settings') {
-            $this->save_settings();
-        }
-        else {
-            $this->inbox();
-        }
+        return;
     }
     
     //message screen

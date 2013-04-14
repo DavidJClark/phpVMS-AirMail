@@ -43,14 +43,20 @@ class Mail extends CodonModule {
     }
     
     //message screen
-    public function message()   {
-        $this->show('mail/mail_message');
+    public function message(){
+        if(!Auth::LoggedIn()){
+            $this->set('message', 'You must be logged in to access this feature!');
+            $this->render('core_error.tpl');
+            return;
+        }else{
+            $this->menu();
+            $this->show('mail/mail_message.tpl');
+        }
     }
     
     //main inbox
     public function inbox() {
-        $pid = Auth::$userinfo->pilotid;
-        $this->set('mail', MailData::getallmail($pid));
+        $this->set('mail', MailData::getallmail(Auth::$userinfo->pilotid));
         $this->set('pilotcode', PilotData::GetPilotCode(Auth::$userinfo->code, Auth::$userinfo->pilotid));
         $this->menu();
         $this->show('mail/mail_inbox.tpl');
@@ -62,14 +68,15 @@ class Mail extends CodonModule {
         $this->show('mail/mail_menu.tpl');
     }
 
-    public function item($thread_id) {
+    public function item($thread_id, $who_to = null) {
+        $who_to = ($who_to == null) ? Auth::$userinfo->pilotid : (int)$who_to;
         if(!Auth::LoggedIn()) {
             $this->set('message', 'You must be logged in to access this feature!');
             $this->render('core_error.tpl');
             return;
         }
         else {
-            $this->set('mail', MailData::getmailcontent($thread_id));
+            $this->set('mail', MailData::getmailcontent($thread_id, $who_to));
             $this->menu();
             $this->show('mail/mail_open.tpl');
         }

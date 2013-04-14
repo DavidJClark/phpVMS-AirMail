@@ -159,7 +159,6 @@ class Mail extends CodonModule {
             }
 
         $this->set('message', '<div id="success">AIRMail Message Sent!</div>');
-        $this->message();
     }
 
     //get sent messages
@@ -213,7 +212,7 @@ class Mail extends CodonModule {
             return;
         }
         MailData::deletemailitem($mail_id);
-        header('Location: '.url('/Mail'));
+        $this->index();
     }
     
     //delete all messages in particular folder view for pilot
@@ -226,7 +225,7 @@ class Mail extends CodonModule {
         $pid = Auth::$userinfo->pilotid;
         MailData::delete_inbox($pid, $folderid);
         $this->set('message', '<div id="success">All Inbox Messages Deleted</div>');
-        $this->message();
+        $this->index();
     }
 
     //delete single sent item from senders view
@@ -251,7 +250,7 @@ class Mail extends CodonModule {
         $pid = Auth::$userinfo->pilotid;
         MailData::delete_sentbox($pid);
         $this->set('message', '<div id="success">All Sent Messages Deleted From View</div>');
-        $this->message();
+        $this->sent();
     }
 
     public function reply($thread_id) {
@@ -368,13 +367,13 @@ class Mail extends CodonModule {
         $folder_id = DB::escape($this->post->folder_id);
 
         MailData::deletefolder($folder_id);
-        header('Location: '.url('/Mail'));
+        $this->index();
     }
 
      protected function confirm_edit_folder()   {
         $folder_id = DB::escape($this->post->folder_id);
         $folder_title = DB::escape($this->post->folder_title);
         MailData::editfolder($folder_id, $folder_title);
-        header('Location: '.url('/Mail'));
+        $this->index();
     }
 }

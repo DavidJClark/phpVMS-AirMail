@@ -20,6 +20,9 @@ php 5.3.4
 mysql 5.0.7
 apache 2.2.17
 
+Contributions by:
+Oxymoron290 - Timothy Sturm
+
 This system is not compatible with any earlier versions of AirMail
 
 New Features:

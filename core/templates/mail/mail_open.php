@@ -25,14 +25,40 @@
                                 if($data->who_to == Auth::$userinfo->pilotid){
                                     $user = PilotData::GetPilotData($data->who_from);
                                     $pilot = PilotData::GetPilotCode($user->code, $data->who_from);
-                                    echo 'From: ';
+                                    if($user){
+                                        echo 'From: ';
+                                    }
                                 }
                                 if($data->who_from == Auth::$userinfo->pilotid){
                                     $user = PilotData::GetPilotData($data->who_to);
                                     $pilot = PilotData::GetPilotCode($user->code, $data->who_to);
-                                    echo 'To: ';
+                                    if($user){
+                                        echo 'To: ';
+                                    }
                                 }
-                                echo $user->firstname.' '. $user->lastname.' '.$pilot;
+                                
+                                if($user){
+                                    echo $user->firstname.' '. $user->lastname.' - '.$pilot;
+
+                                    $contact = ContactsData::getContact($user->pilotid, Auth::$userinfo->pilotid);
+
+                                    //TODO: Add onclick events for the following buttons
+                                    // Maybe we want to call these in the background?
+
+                                    if($contact->blocked == 'Y'){
+                                        echo '<a href="'.SITE_URL.'/index.php/contacts/unblock/'.$user->pilotid.'">[<img src="'.SITE_URL.'/core/modules/Mail/mailimages/blocked.gif" alt="Unblock Pilot" />Unblock Pilot]</a>';
+                                    }else{
+                                        if($contact == null){
+                                            echo '<a href="'.SITE_URL.'/index.php/contacts/add/'.$user->pilotid.'">[<img src="'.SITE_URL.'/core/modules/Mail/mailimages/addContact.png" alt="Add Pilot as Contact" />Add Pilot]</a>';
+                                            echo '<a href="'.SITE_URL.'/index.php/contacts/block/'.$user->pilotid.'">[<img src="'.SITE_URL.'/core/modules/Mail/mailimages/blocked.gif" alt="Block Pilot" />Block Pilot]</a>';
+                                        }else{
+                                            // I'm not sure if we need this if here.
+                                            if($contact->blocked == 'N'){
+                                                echo '<a href="'.SITE_URL.'/index.php/contacts/remove/'.$user->pilotid.'">[<img src="'.SITE_URL.'/core/modules/Mail/mailimages/removeContact.png" alt="Remove Pilot as Contact" />Remove Pilot]</a>';
+                                            }
+                                        }
+                                    }
+                                }
                             ?>
                         
                         </b>

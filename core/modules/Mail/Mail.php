@@ -18,38 +18,45 @@ class Mail extends CodonModule {
             $this->render('core_error.tpl');
             return;
         }
-        elseif($this->post->action == 'send') {
-            $this->send();
+        switch($this->post->action){
+            case 'savefolder':
+                $this->savefolder();
+                break;
+            case 'move':
+                $this->move();
+                break;
+            case 'confirm_delete_folder':
+                $this->confirm_delete_folder();
+                break;
+            case 'confirm_edit_folder':
+                $this->confirm_edit_folder();
+                break;
+            case 'save_settings':
+                $this->save_settings();
+                break;
+            case 'send':
+                $this->send();
+            default:
+                $this->inbox();
         }
-        elseif($this->post->action == 'savefolder') {
-            $this->savefolder();
-        }
-        elseif($this->post->action == 'move') {
-            $this->move();
-        }
-        elseif($this->post->action == 'confirm_delete_folder') {
-            $this->confirm_delete_folder();
-        }
-        elseif($this->post->action == 'confirm_edit_folder') {
-            $this->confirm_edit_folder();
-        }
-        elseif($this->post->action == 'save_settings') {
-            $this->save_settings();
-        }
-        else {
-            $this->inbox();
-        }
+        return;
     }
     
     //message screen
-    public function message()   {
-        $this->show('mail/mail_message');
+    public function message(){
+        if(!Auth::LoggedIn()){
+            $this->set('message', 'You must be logged in to access this feature!');
+            $this->render('core_error.tpl');
+            return;
+        }else{
+            $this->menu();
+            $this->show('mail/mail_message.tpl');
+        }
     }
     
     //main inbox
     public function inbox() {
-        $pid = Auth::$userinfo->pilotid;
-        $this->set('mail', MailData::getallmail($pid));
+        $this->set('mail', MailData::getallmail(Auth::$userinfo->pilotid));
         $this->set('pilotcode', PilotData::GetPilotCode(Auth::$userinfo->code, Auth::$userinfo->pilotid));
         $this->menu();
         $this->show('mail/mail_inbox.tpl');
@@ -61,29 +68,38 @@ class Mail extends CodonModule {
         $this->show('mail/mail_menu.tpl');
     }
 
-    public function item($thread_id) {
+    public function item($thread_id, $who_to = null) {
+        $who_to = ($who_to == null) ? Auth::$userinfo->pilotid : (int)$who_to;
+        
         if(!Auth::LoggedIn()) {
             $this->set('message', 'You must be logged in to access this feature!');
             $this->render('core_error.tpl');
             return;
         }
         else {
-            $this->set('mail', MailData::getmailcontent($thread_id));
             $this->menu();
+            $this->set('mail', MailData::getmailcontent($thread_id, $who_to));
             $this->show('mail/mail_open.tpl');
         }
     }
 
     //create new message
-    public function newmail() {
+    public function newmail($who_to = null) {
         if(!Auth::LoggedIn()) {
             $this->set('message', 'You must be logged in to access this feature!');
             $this->render('core_error.tpl');
             return;
         }
         else {
-            $this->set('allpilots', $pilots=(PilotData::findPilots(array('p.retired' => '0'))));
             $this->menu();
+            if($who_to != null){
+                $receiver = PilotData::getPilotData($who_to);
+                if($receiver != null){
+                    $this->set('who_to', $receiver);
+                }
+            }
+            
+            $this->set('allpilots', $pilots=(PilotData::findPilots(array('p.retired' => '0'))));
             $this->show('mail/mail_new.tpl');
         }
     }
@@ -151,7 +167,6 @@ class Mail extends CodonModule {
             }
 
         $this->set('message', '<div id="success">AIRMail Message Sent!</div>');
-        $this->message();
     }
 
     //get sent messages
@@ -205,7 +220,7 @@ class Mail extends CodonModule {
             return;
         }
         MailData::deletemailitem($mail_id);
-        header('Location: '.url('/Mail'));
+        $this->index();
     }
     
     //delete all messages in particular folder view for pilot
@@ -218,7 +233,7 @@ class Mail extends CodonModule {
         $pid = Auth::$userinfo->pilotid;
         MailData::delete_inbox($pid, $folderid);
         $this->set('message', '<div id="success">All Inbox Messages Deleted</div>');
-        $this->message();
+        $this->index();
     }
 
     //delete single sent item from senders view
@@ -243,7 +258,7 @@ class Mail extends CodonModule {
         $pid = Auth::$userinfo->pilotid;
         MailData::delete_sentbox($pid);
         $this->set('message', '<div id="success">All Sent Messages Deleted From View</div>');
-        $this->message();
+        $this->sent();
     }
 
     public function reply($thread_id) {
@@ -360,13 +375,13 @@ class Mail extends CodonModule {
         $folder_id = DB::escape($this->post->folder_id);
 
         MailData::deletefolder($folder_id);
-        header('Location: '.url('/Mail'));
+        $this->index();
     }
 
      protected function confirm_edit_folder()   {
         $folder_id = DB::escape($this->post->folder_id);
         $folder_title = DB::escape($this->post->folder_title);
         MailData::editfolder($folder_id, $folder_title);
-        header('Location: '.url('/Mail'));
+        $this->index();
     }
 }

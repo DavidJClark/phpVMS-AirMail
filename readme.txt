@@ -27,6 +27,7 @@ New Features:
 -Delete All function in inbox and all message folders
 -Individual pilot setting to have email sent to pilot when new message is received
 -Threaded messages
+-Contacts and Address Booking system
 
 Install Using Simpilotgroup Plugin Manager
 
@@ -38,7 +39,7 @@ Install Manually:
 
 -Download the package.
 -Unzip the package and place the files as structured in your root phpVMS install.
--Use the airmail.sql file to create the tables needed in your sql database using phpmyadmin or similar.
+-Use the airmail.sql and contacts.sql file to create the tables needed in your sql database using phpmyadmin or similar.
 
 Options:
 

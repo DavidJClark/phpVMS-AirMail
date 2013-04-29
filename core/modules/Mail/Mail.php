@@ -70,28 +70,36 @@ class Mail extends CodonModule {
 
     public function item($thread_id, $who_to = null) {
         $who_to = ($who_to == null) ? Auth::$userinfo->pilotid : (int)$who_to;
+        
         if(!Auth::LoggedIn()) {
             $this->set('message', 'You must be logged in to access this feature!');
             $this->render('core_error.tpl');
             return;
         }
         else {
-            $this->set('mail', MailData::getmailcontent($thread_id, $who_to));
             $this->menu();
+            $this->set('mail', MailData::getmailcontent($thread_id, $who_to));
             $this->show('mail/mail_open.tpl');
         }
     }
 
     //create new message
-    public function newmail() {
+    public function newmail($who_to = null) {
         if(!Auth::LoggedIn()) {
             $this->set('message', 'You must be logged in to access this feature!');
             $this->render('core_error.tpl');
             return;
         }
         else {
-            $this->set('allpilots', $pilots=(PilotData::findPilots(array('p.retired' => '0'))));
             $this->menu();
+            if($who_to != null){
+                $receiver = PilotData::getPilotData($who_to);
+                if($receiver != null){
+                    $this->set('who_to', $receiver);
+                }
+            }
+            
+            $this->set('allpilots', $pilots=(PilotData::findPilots(array('p.retired' => '0'))));
             $this->show('mail/mail_new.tpl');
         }
     }

@@ -24,7 +24,7 @@ class MailData extends CodonData {
                 WHERE `who_to`='$pid'
                 AND `deleted_state`='0'
                 AND `receiver_folder`='0'
-                ORDER BY `date` ASC";
+                ORDER BY `date` DESC";
 
         $results = DB::get_results($query);
         
@@ -67,7 +67,7 @@ class MailData extends CodonData {
                 WHERE `who_from`='$pid'
                 AND `sent_state`='0'
                 AND `notam`<'2'
-                ORDER BY `date` ASC";
+                ORDER BY `date` DESC";
 
         $results = DB::get_results($query);
         
@@ -81,9 +81,36 @@ class MailData extends CodonData {
     }
     
     public static function send_new_mail($who_to, $who_from, $subject, $newmessage, $notam, $thread_id) {
-        $sql="INSERT INTO ".TABLE_PREFIX."airmail (`who_to`, `who_from`, `date`, `subject`, `message`, `notam`, `thread_id`)
-			VALUES ('$who_to', '$who_from', NOW(), '$subject', '$newmessage', '$notam', '$thread_id')";
-                
+        $contact = PilotData::getPilotData((int)$who_to);
+        
+        if($contact == null || empty($contact)){
+            self::undeliverable($who_from, $subject, 'The pilot with ID# '.$who_to.' does not exist.');
+            return false;
+        }
+        
+        if(ContactsData::isAble($who_to, $who_from)){
+            $sql="INSERT INTO `".TABLE_PREFIX."airmail` (`who_to`, `who_from`, `date`, `subject`, `message`, `notam`, `thread_id`)
+                            VALUES ('$who_to', '$who_from', NOW(), '$subject', '$newmessage', '$notam', '$thread_id')";
+
+            DB::query($sql);
+
+            $code = DB::errno();
+            if ($code != 0){
+                $message = DB::error();
+                throw new Exception($message, $code);
+            }
+            return true;
+        }else{        
+            self::undeliverable($who_from, $subject, 'The pilot with ID# '.$who_to.' is not accepting mail at the moment.');
+            return false;
+        }
+    }
+    
+    public static function undeliverable($sender, $subject, $reason){
+        $message = 'Your message '.$subject.' could not be delivered. '.$reason;
+        
+        $sql="INSERT INTO `".TABLE_PREFIX."airmail` (`who_to`, `who_from`, `date`, `subject`, `message`)
+			VALUES ('$sender', '', NOW(), 'Message Undeliverable', '$message')";
         DB::query($sql);
         
         $code = DB::errno();
@@ -100,7 +127,6 @@ class MailData extends CodonData {
         $query = "SELECT email FROM `".TABLE_PREFIX."airmail_email` WHERE `pilot_id`='$pid'";
         
         $result = DB::get_row($query);
-        
         $code = DB::errno();
         if ($code != 0){
             $message = DB::error();
@@ -149,7 +175,7 @@ class MailData extends CodonData {
         return;
     }
 
-    public static function deletemailitem($mailid, $pid = null) {
+    public static function deletemailitem($mailid) {
         $pid = ($pid == null) ? Auth::$userinfo->pilotid : (int)$pid;
         if($pid != Auth::$userinfo->pilotid){
             throw new Exception("This mailbox does not belong to you. ".
@@ -230,7 +256,7 @@ class MailData extends CodonData {
     }
 
     //delete all sent items from pilots view
-    public static function deletesentmailitem($mailid, $pid = null) {
+    public static function deletesentmailitem($mailid) {
         $pid = ($pid == null) ? Auth::$userinfo->pilotid : (int)$pid;
         if($pid != Auth::$userinfo->pilotid){
             throw new Exception("This mailbox does not belong to you. ".
@@ -309,8 +335,8 @@ class MailData extends CodonData {
         
         return $results;
     }
-    
-    public static function checkformail($pid = null) {
+
+    public static function checkformail() {
         $pid = ($pid == null) ? Auth::$userinfo->pilotid : (int)$pid;
         if(Auth::$userinfo->pilotid != $pid){
             throw new Exception("This mailbox does not belong to you. If you are accessing this via an Administration module, this feature is still in development");
@@ -318,6 +344,7 @@ class MailData extends CodonData {
         $query = "SELECT COUNT(*) AS total
                 FROM `".TABLE_PREFIX."airmail`
                 WHERE `read_state`=0
+                AND `deleted_state`=0
                 AND `who_to`='$pid'";
 
         $results = DB::get_row($query);
@@ -331,7 +358,7 @@ class MailData extends CodonData {
         return $results;
     }
 
-    public function savenewfolder($folder_title) {
+    public static function savenewfolder($folder_title) {
         $pilot_id = Auth::$userinfo->pilotid;
         $query ="INSERT INTO `".TABLE_PREFIX."airmail_folders` (`pilot_id`, `folder_title`)
                     VALUES ('$pilot_id', '$folder_title')";

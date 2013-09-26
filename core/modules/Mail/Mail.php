@@ -15,7 +15,7 @@ class Mail extends CodonModule {
     public function index() {
         if(!Auth::LoggedIn()) {
             $this->set('message', 'You must be logged in to access this feature!');
-            $this->render('core_error.tpl');
+            $this->render('core_error');
             return;
         }
         switch($this->post->action){
@@ -46,11 +46,11 @@ class Mail extends CodonModule {
     public function message(){
         if(!Auth::LoggedIn()){
             $this->set('message', 'You must be logged in to access this feature!');
-            $this->render('core_error.tpl');
+            $this->render('core_error');
             return;
         }else{
             $this->menu();
-            $this->show('mail/mail_message.tpl');
+            $this->show('mail/mail_message');
         }
     }
     
@@ -59,26 +59,26 @@ class Mail extends CodonModule {
         $this->set('mail', MailData::getallmail(Auth::$userinfo->pilotid));
         $this->set('pilotcode', PilotData::GetPilotCode(Auth::$userinfo->code, Auth::$userinfo->pilotid));
         $this->menu();
-        $this->show('mail/mail_inbox.tpl');
+        $this->show('mail/mail_inbox');
     }
     
     //internal function to show top menu for airmail
     public function menu()  {
         $this->set('folders', MailData::checkforfolders(Auth::$userinfo->pilotid));
-        $this->show('mail/mail_menu.tpl');
+        $this->show('mail/mail_menu');
     }
 
     public function item($thread_id, $who_to = null) {
         $who_to = ($who_to == null) ? Auth::$userinfo->pilotid : (int)$who_to;
         if(!Auth::LoggedIn()) {
             $this->set('message', 'You must be logged in to access this feature!');
-            $this->render('core_error.tpl');
+            $this->render('core_error');
             return;
         }
         else {
             $this->set('mail', MailData::getmailcontent($thread_id, $who_to));
             $this->menu();
-            $this->show('mail/mail_open.tpl');
+            $this->show('mail/mail_open');
         }
     }
 
@@ -86,13 +86,13 @@ class Mail extends CodonModule {
     public function newmail() {
         if(!Auth::LoggedIn()) {
             $this->set('message', 'You must be logged in to access this feature!');
-            $this->render('core_error.tpl');
+            $this->render('core_error');
             return;
         }
         else {
             $this->set('allpilots', $pilots=(PilotData::findPilots(array('p.retired' => '0'))));
             $this->menu();
-            $this->show('mail/mail_new.tpl');
+            $this->show('mail/mail_new');
         }
     }
 
@@ -100,7 +100,7 @@ class Mail extends CodonModule {
     protected function send() {
         if(!Auth::LoggedIn()) {
             $this->set('message', 'You must be logged in to access this feature!');
-            $this->render('core_error.tpl');
+            $this->render('core_error');
             return;
         }
         $who_to = DB::escape($this->post->who_to);
@@ -165,32 +165,32 @@ class Mail extends CodonModule {
     public function sent() {
         if(!Auth::LoggedIn()) {
             $this->set('message', 'You must be logged in to access this feature!');
-            $this->render('core_error.tpl');
+            $this->render('core_error');
             return;
         }
         $pid = Auth::$userinfo->pilotid;
         $this->set('mail', MailData::getsentmail($pid));
         $this->set('pilotcode', PilotData::GetPilotCode(Auth::$userinfo->code, Auth::$userinfo->pilotid));
         $this->menu();
-        $this->show('mail/mail_sentitems.tpl');
+        $this->show('mail/mail_sentitems');
     }
     
     //settings for pilots
     public function settings()  {
         if(!Auth::LoggedIn()) {
             $this->set('message', 'You must be logged in to access this feature!');
-            $this->render('core_error.tpl');
+            $this->render('core_error');
             return;
         }
         $this->menu();
-        $this->show('mail/mail_settings.tpl');
+        $this->show('mail/mail_settings');
     }
     
     //save new settings for pilot
     protected function save_settings()  {
         if(!Auth::LoggedIn()) {
             $this->set('message', 'You must be logged in to access this feature!');
-            $this->render('core_error.tpl');
+            $this->render('core_error');
             return;
         }
         if($this->post->email == '0')
@@ -208,7 +208,7 @@ class Mail extends CodonModule {
     public function delete($mail_id) {
         if(!Auth::LoggedIn()) {
             $this->set('message', 'You must be logged in to access this feature!');
-            $this->render('core_error.tpl');
+            $this->render('core_error');
             return;
         }
         MailData::deletemailitem($mail_id);
@@ -219,7 +219,7 @@ class Mail extends CodonModule {
     public function delete_all($folder)    {
         if(!Auth::LoggedIn()) {
             $this->set('message', 'You must be logged in to access this feature!');
-            $this->render('core_error.tpl');
+            $this->render('core_error');
             return;
         }
         $pid = Auth::$userinfo->pilotid;
@@ -232,7 +232,7 @@ class Mail extends CodonModule {
     public function sent_delete() {
         if(!Auth::LoggedIn()) {
             $this->set('message', 'You must be logged in to access this feature!');
-            $this->render('core_error.tpl');
+            $this->render('core_error');
             return;
         }
         $mailid = $_GET['mailid'];
@@ -244,7 +244,7 @@ class Mail extends CodonModule {
     public function delete_allsent()    {
         if(!Auth::LoggedIn()) {
             $this->set('message', 'You must be logged in to access this feature!');
-            $this->render('core_error.tpl');
+            $this->render('core_error');
             return;
         }
         $pid = Auth::$userinfo->pilotid;
@@ -256,12 +256,12 @@ class Mail extends CodonModule {
     public function reply($thread_id) {
         if(!Auth::LoggedIn()) {
             $this->set('message', 'You must be logged in to access this feature!');
-            $this->render('core_error.tpl');
+            $this->render('core_error');
             return;
         }
         $this->set('mail', MailData::getmailcontent($thread_id));
         $this->menu();
-        $this->show('mail/mail_reply.tpl');
+        $this->show('mail/mail_reply');
     }
 
     public function checkmail() {
@@ -271,7 +271,7 @@ class Mail extends CodonModule {
             $item = MailData::checkformail();
             $items = $item->total;
             $this->set('items', $items);
-            $this->show('mail/mail_check.tpl');
+            $this->show('mail/mail_check');
         }
     }
 
@@ -287,18 +287,18 @@ class Mail extends CodonModule {
     public function newfolder() {
         if(!Auth::LoggedIn()) {
             $this->set('message', 'You must be logged in to access this feature!');
-            $this->render('core_error.tpl');
+            $this->render('core_error');
             return;
         }
         $this->menu();
-        $this->show('mail/mail_newfolder.tpl');
+        $this->show('mail/mail_newfolder');
     }
 
     //save new folder
     protected function savefolder() {
         if(!Auth::LoggedIn()) {
             $this->set('message', 'You must be logged in to access this feature!');
-            $this->render('core_error.tpl');
+            $this->render('core_error');
             return;
         }
         $folder_title = DB::escape($this->post->folder_title);
@@ -309,19 +309,19 @@ class Mail extends CodonModule {
     public function getfolder($id) {
         if(!Auth::LoggedIn()) {
             $this->set('message', 'You must be logged in to access this feature!');
-            $this->render('core_error.tpl');
+            $this->render('core_error');
             return;
         }
         $this->set('folder', MailData::getfoldercontents($id));
         $this->set('mail', MailData::getfoldermail($id));
         $this->menu();
-        $this->show('mail/mail_inbox.tpl');
+        $this->show('mail/mail_inbox');
     }
 
     public function move_message($id)  {
         if(!Auth::LoggedIn()) {
             $this->set('message', 'You must be logged in to access this feature!');
-            $this->render('core_error.tpl');
+            $this->render('core_error');
             return;
         }
         $this->set('mail_id', $id);
@@ -333,7 +333,7 @@ class Mail extends CodonModule {
     protected function move() {
         if(!Auth::LoggedIn()) {
             $this->set('message', 'You must be logged in to access this feature!');
-            $this->render('core_error.tpl');
+            $this->render('core_error');
             return;
         }
         $folder = DB::escape($this->post->folder);
@@ -345,22 +345,22 @@ class Mail extends CodonModule {
     public function editfolder($id)    {
         if(!Auth::LoggedIn()) {
             $this->set('message', 'You must be logged in to access this feature!');
-            $this->render('core_error.tpl');
+            $this->render('core_error');
             return;
         }
         $this->set('folder', MailData::getfoldercontents($id));
         $this->menu();
-        $this->show('mail/mail_editfolder.tpl');
+        $this->show('mail/mail_editfolder');
     }
 
     public function deletefolder()  {
         if(!Auth::LoggedIn()) {
             $this->set('message', 'You must be logged in to access this feature!');
-            $this->render('core_error.tpl');
+            $this->render('core_error');
             return;
         }
         $this->menu();
-        $this->show('mail/mail_deletefolder.tpl');
+        $this->show('mail/mail_deletefolder');
     }
 
     protected function confirm_delete_folder()   {

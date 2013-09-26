@@ -1,4 +1,4 @@
-AirMail 3.0
+AirMail 4.0
 
 phpVMS module to create a messaging system your phpVMS based virtual airline.
 
@@ -15,10 +15,10 @@ www.simpilotgroup.com
 www.david-clark.net
 
 Developed on:
-phpVMS v2.1.934-158
-php 5.3.4
-mysql 5.0.7
-apache 2.2.17
+phpVMS v-dev
+php 5.3.13
+mysql 5.5.24
+apache 2.2.22
 
 Contributions by:
 Oxymoron290 - Timothy Sturm

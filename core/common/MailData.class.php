@@ -6,11 +6,11 @@
  * simpilotgroup addon modules are licenced under the following license:
  * Creative Commons Attribution Non-commercial Share Alike (by-nc-sa)
  * To view full icense text visit http://creativecommons.org/licenses/by-nc-sa/3.0/
- * 
+ *
  * @author David Clark (simpilot)
  * @copyright Copyright (c) 2009-2011, David Clark
  * @license http://creativecommons.org/licenses/by-nc-sa/3.0/
- * @contributors oxymoron; 
+ * @contributors oxymoron;
  */
 
 class MailData extends CodonData {
@@ -27,13 +27,13 @@ class MailData extends CodonData {
                 ORDER BY `date` ASC";
 
         $results = DB::get_results($query);
-        
+
         $code = DB::errno();
         if ($code != 0){
             $message = DB::error();
             throw new Exception($message, $code);
         }
-        
+
         return $results;
     }
 
@@ -48,13 +48,13 @@ class MailData extends CodonData {
                 AND `read_state`='0'";
 
         $count = DB::get_row($query);
-        
+
         $code = DB::errno();
         if ($code != 0){
             $message = DB::error();
             throw new Exception($message, $code);
         }
-        
+
         return $count->total;
     }
 
@@ -70,82 +70,82 @@ class MailData extends CodonData {
                 ORDER BY `date` ASC";
 
         $results = DB::get_results($query);
-        
+
         $code = DB::errno();
         if ($code != 0){
             $message = DB::error();
             throw new Exception($message, $code);
         }
-        
+
         return $results;
     }
-    
+
     public static function send_new_mail($who_to, $who_from, $subject, $newmessage, $notam, $thread_id) {
         $sql="INSERT INTO ".TABLE_PREFIX."airmail (`who_to`, `who_from`, `date`, `subject`, `message`, `notam`, `thread_id`)
 			VALUES ('$who_to', '$who_from', NOW(), '$subject', '$newmessage', '$notam', '$thread_id')";
-                
+
         DB::query($sql);
-        
+
         $code = DB::errno();
         if ($code != 0){
             $message = DB::error();
             throw new Exception($message, $code);
         }
-        
+
         return;
     }
-    
+
     //check to see if pilot wants email sent when new message arrives
     public static function send_email($pid)    {
         $query = "SELECT email FROM `".TABLE_PREFIX."airmail_email` WHERE `pilot_id`='$pid'";
-        
+
         $result = DB::get_row($query);
-        
+
         $code = DB::errno();
         if ($code != 0){
             $message = DB::error();
             throw new Exception($message, $code);
         }
-        
+
         if($result->email == 1)
         {return TRUE;}
         else
         {return FALSE;}
     }
-    
+
     //remove email setting
     public static function remove_email_setting($pid)  {
         if(Auth::$userinfo->pilotid != $pid){
             throw new Exception("This mailbox does not belong to you. If you are accessing this via an Administration module, this feature is still in development");
         }
         $query = "DELETE FROM `".TABLE_PREFIX."airmail_email` WHERE `pilot_id`='$pid'";
-        
+
         DB::query($query);
-        
+
         $code = DB::errno();
         if ($code != 0){
             $message = DB::error();
             throw new Exception($message, $code);
         }
-        
+
         return;
     }
-    
+
     //set email pilot setting
     public static function set_email_setting($pid) {
         if(Auth::$userinfo->pilotid != $pid){
             throw new Exception("This mailbox does not belong to you. If you are accessing this via an Administration module, this feature is still in development");
         }
         $query = "INSERT INTO `".TABLE_PREFIX."airmail_email` (`pilot_id`, `email`) VALUES ('$pid', '1')";
-        
+
         DB::query($query);
-        
+
         $code = DB::errno();
         if ($code != 0){
             $message = DB::error();
             throw new Exception($message, $code);
         }
-        
+
         return;
     }
 
@@ -157,9 +157,9 @@ class MailData extends CodonData {
                         "this feature is still in development"
                     );
         }
-        
+
         $mailid = (int)$mailid;
-        
+
         $sql = "SELECT *
                 FROM `".TABLE_PREFIX."airmail`
                 WHERE `id`='$mailid'
@@ -172,7 +172,7 @@ class MailData extends CodonData {
                 "WHERE `id`='$mailid'";
 
         DB::query($upd);
-        
+
         $code = DB::errno();
         if ($code != 0){
             $message = DB::error();
@@ -180,16 +180,16 @@ class MailData extends CodonData {
         }
 
         $results = DB::get_results($sql);
-        
+
         $code = DB::errno();
         if ($code != 0){
             $message = DB::error();
             throw new Exception($message, $code);
         }
-        
+
         return $results;
     }
-    
+
     //delete a pilots messages from inbox and foldersviews
     public static function delete_inbox($pid, $folderid) {
         if(Auth::$userinfo->pilotid != $pid){
@@ -201,16 +201,16 @@ class MailData extends CodonData {
                 "`deleted_state`=1 ".
                 "WHERE `who_to`='$pid' AND `receiver_folder`='$folderid'";
         DB::query($query);
-        
+
         $code = DB::errno();
         if ($code != 0){
             $message = DB::error();
             throw new Exception($message, $code);
         }
-        
+
         return;
     }
-    
+
     //delete a pilots sent messages from view
     public static function delete_sentbox($pid) {
         if(Auth::$userinfo->pilotid != $pid){
@@ -219,13 +219,13 @@ class MailData extends CodonData {
         //throw new Exception("We can find a better way of doing this... Function disabled for now.");
         $query = "UPDATE `".TABLE_PREFIX."airmail` SET `sent_state`=1 WHERE `who_from`='$pid'";
         DB::query($query);
-        
+
         $code = DB::errno();
         if ($code != 0){
             $message = DB::error();
             throw new Exception($message, $code);
         }
-        
+
         return;
     }
 
@@ -238,9 +238,9 @@ class MailData extends CodonData {
                         "this feature is still in development"
                     );
         }
-        
+
         $mailid = (int)$mailid;
-        
+
         $sql = "SELECT *
                 FROM `".TABLE_PREFIX."airmail`
                 WHERE `id`='$mailid'
@@ -250,42 +250,42 @@ class MailData extends CodonData {
         $upd = "UPDATE `".TABLE_PREFIX."airmail` SET `sent_state`=1 WHERE `id`='$mailid'";
 
         DB::query($upd);
-        
+
         $code = DB::errno();
         if ($code != 0){
             $message = DB::error();
             throw new Exception($message, $code);
         }
-        
+
         $results = DB::get_results($sql);
-        
+
         $code = DB::errno();
         if ($code != 0){
             $message = DB::error();
             throw new Exception($message, $code);
         }
-        
+
         return $results;
     }
 
     public static function getmailcontent($thread_id, $pid = null) {
         $pid = ($pid == null) ? Auth::$userinfo->pilotid : (int)$pid;
         $thread_id = (int)$thread_id; // Cast as an integer
-        
+
         $sql = "SELECT *
                 FROM `".TABLE_PREFIX."airmail`
                 WHERE `thread_id`='$thread_id'
                 AND `who_to`='$pid'
                 ORDER BY `id` ASC
             ";
-        
+
         $results = DB::get_results($sql);
         $code = DB::errno();
         if ($code != 0){
             $message = DB::error();
             throw new Exception($message, $code);
         }
-        
+
         if($pid != Auth::$userinfo->pilotid){
             $allow = false;
             foreach($results as $item){
@@ -306,10 +306,10 @@ class MailData extends CodonData {
                 throw new Exception($message, $code);
             }
         }
-        
+
         return $results;
     }
-    
+
     public static function checkformail($pid = null) {
         $pid = ($pid == null) ? Auth::$userinfo->pilotid : (int)$pid;
         if(Auth::$userinfo->pilotid != $pid){
@@ -321,13 +321,13 @@ class MailData extends CodonData {
                 AND `who_to`='$pid'";
 
         $results = DB::get_row($query);
-        
+
         $code = DB::errno();
         if ($code != 0){
             $message = DB::error();
             throw new Exception($message, $code);
         }
-        
+
         return $results;
     }
 
@@ -336,13 +336,13 @@ class MailData extends CodonData {
         $query ="INSERT INTO `".TABLE_PREFIX."airmail_folders` (`pilot_id`, `folder_title`)
                     VALUES ('$pilot_id', '$folder_title')";
         DB::query($query);
-        
+
         $code = DB::errno();
         if ($code != 0){
             $message = DB::error();
             throw new Exception($message, $code);
         }
-        
+
         return;
     }
 
@@ -356,13 +356,13 @@ class MailData extends CodonData {
                     ORDER BY `folder_title` ASC";
 
         $results = DB::get_results($query);
-        
+
         $code = DB::errno();
         if ($code != 0){
             $message = DB::error();
             throw new Exception($message, $code);
         }
-        
+
         return $results;
     }
 
@@ -372,7 +372,7 @@ class MailData extends CodonData {
                     WHERE `id`='$id'";
 
         $results = DB::get_row($query);
-        
+
         $code = DB::errno();
         if ($code != 0){
             $message = DB::error();
@@ -392,7 +392,7 @@ class MailData extends CodonData {
                 ORDER BY `date` ASC";
 
         $results = DB::get_results($query);
-        
+
         $code = DB::errno();
         if ($code != 0){
             $message = DB::error();
@@ -406,22 +406,22 @@ class MailData extends CodonData {
         $upd = "UPDATE `".TABLE_PREFIX."airmail` SET `receiver_folder`='$folder' WHERE `id`='$mail_id'";
 
         DB::query($upd);
-        
+
         $code = DB::errno();
         if ($code != 0){
             $message = DB::error();
             throw new Exception($message, $code);
         }
-        
+
         return;
     }
 
     public function deletefolder($folder_id)    {
         //throw new Exception("TODO: Check if the item belongs to the appropriate pilot.");
-        $upd = "UPDATE `".TABLE_PREFIX."airmail` SET `receiver_folder`='0' WHERE `reciever_folder`='$folder_id'";
+        $upd = "UPDATE `".TABLE_PREFIX."airmail` SET `receiver_folder`='0' WHERE `receiver_folder`='$folder_id'";
 
         DB::query($upd);
-        
+
         $code = DB::errno();
         if ($code != 0){
             $message = DB::error();
@@ -432,13 +432,13 @@ class MailData extends CodonData {
                 WHERE `id`='$folder_id'";
 
         DB::query($query2);
-        
+
         $code = DB::errno();
         if ($code != 0){
             $message = DB::error();
             throw new Exception($message, $code);
         }
-        
+
         return;
     }
 
@@ -447,7 +447,7 @@ class MailData extends CodonData {
         $upd = "UPDATE `".TABLE_PREFIX."airmail_folders` SET `folder_title`='$folder_title' WHERE `id`='$folder_id'";
 
         DB::query($upd);
-        
+
         $code = DB::errno();
         if ($code != 0){
             $message = DB::error();
@@ -455,18 +455,18 @@ class MailData extends CodonData {
         }
         return;
     }
-    
+
     public function getprofilemail($pilotid)    {
         $query = "SELECT * FROM `".TABLE_PREFIX."airmail` WHERE `who_to`='$pilotid' ORDER BY `date` DESC LIMIT 2";
-        
+
         $results = DB::get_results($query);
-        
+
         $code = DB::errno();
         if ($code != 0){
             $message = DB::error();
             throw new Exception($message, $code);
         }
-        
+
         return $results;
     }
 }

@@ -41,7 +41,7 @@ class Mail extends CodonModule {
         }
         return;
     }
-    
+
     //message screen
     public function message(){
         if(!Auth::LoggedIn()){
@@ -53,7 +53,7 @@ class Mail extends CodonModule {
             $this->show('mail/mail_message');
         }
     }
-    
+
     //main inbox
     public function inbox() {
         $this->set('mail', MailData::getallmail(Auth::$userinfo->pilotid));
@@ -61,7 +61,7 @@ class Mail extends CodonModule {
         $this->menu();
         $this->show('mail/mail_inbox');
     }
-    
+
     //internal function to show top menu for airmail
     public function menu()  {
         $this->set('folders', MailData::checkforfolders(Auth::$userinfo->pilotid));
@@ -108,10 +108,10 @@ class Mail extends CodonModule {
         $subject = DB::escape($this->post->subject);
         $message = DB::escape($this->post->message);
         $oldmessage = DB::escape($this->post->oldmessage);
-        
+
         if($oldmessage)
         {
-            $thread_id = $oldmessage; 
+            $thread_id = $oldmessage;
         }
         else
         {
@@ -124,7 +124,7 @@ class Mail extends CodonModule {
             $this->inbox();
             return;
         }
-        
+
         if (!$subject) {
             $subject = '(No Subject)';
         }
@@ -174,7 +174,7 @@ class Mail extends CodonModule {
         $this->menu();
         $this->show('mail/mail_sentitems');
     }
-    
+
     //settings for pilots
     public function settings()  {
         if(!Auth::LoggedIn()) {
@@ -185,7 +185,7 @@ class Mail extends CodonModule {
         $this->menu();
         $this->show('mail/mail_settings');
     }
-    
+
     //save new settings for pilot
     protected function save_settings()  {
         if(!Auth::LoggedIn()) {
@@ -214,7 +214,7 @@ class Mail extends CodonModule {
         MailData::deletemailitem($mail_id);
         $this->index();
     }
-    
+
     //delete all messages in particular folder view for pilot
     public function delete_all($folder)    {
         if(!Auth::LoggedIn()) {
@@ -239,7 +239,7 @@ class Mail extends CodonModule {
         MailData::deletesentmailitem($mailid);
         $this->sent();
     }
-    
+
     //delete all sent items from view
     public function delete_allsent()    {
         if(!Auth::LoggedIn()) {
@@ -329,7 +329,7 @@ class Mail extends CodonModule {
         $this->menu();
         $this->show('mail/move_message');
     }
-    
+
     protected function move() {
         if(!Auth::LoggedIn()) {
             $this->set('message', 'You must be logged in to access this feature!');
@@ -365,8 +365,8 @@ class Mail extends CodonModule {
 
     protected function confirm_delete_folder()   {
         $folder_id = DB::escape($this->post->folder_id);
-
         MailData::deletefolder($folder_id);
+        unset($this->post->action);
         $this->index();
     }
 
@@ -374,6 +374,7 @@ class Mail extends CodonModule {
         $folder_id = DB::escape($this->post->folder_id);
         $folder_title = DB::escape($this->post->folder_title);
         MailData::editfolder($folder_id, $folder_title);
+        unset($this->post->action);
         $this->index();
     }
 }

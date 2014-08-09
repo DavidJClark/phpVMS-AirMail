@@ -331,7 +331,7 @@ class MailData extends CodonData {
         return $results;
     }
 
-    public function savenewfolder($folder_title) {
+    public static function savenewfolder($folder_title) {
         $pilot_id = Auth::$userinfo->pilotid;
         $query ="INSERT INTO `".TABLE_PREFIX."airmail_folders` (`pilot_id`, `folder_title`)
                     VALUES ('$pilot_id', '$folder_title')";
@@ -366,7 +366,7 @@ class MailData extends CodonData {
         return $results;
     }
 
-    public function getfoldercontents($id)  {
+    public static function getfoldercontents($id)  {
         $query = "SELECT *
                     FROM `".TABLE_PREFIX."airmail_folders`
                     WHERE `id`='$id'";
@@ -382,7 +382,7 @@ class MailData extends CodonData {
         return $results;
     }
 
-    public function getfoldermail($id)  {
+    public static function getfoldermail($id)  {
         $pid = Auth::$userinfo->pilotid;
         $query = "SELECT *
                 FROM   `".TABLE_PREFIX."airmail`
@@ -402,7 +402,7 @@ class MailData extends CodonData {
         return $results;
     }
 
-    public function movemail($mail_id, $folder)  {
+    public static function movemail($mail_id, $folder)  {
         $upd = "UPDATE `".TABLE_PREFIX."airmail` SET `receiver_folder`='$folder' WHERE `id`='$mail_id'";
 
         DB::query($upd);
@@ -416,7 +416,7 @@ class MailData extends CodonData {
         return;
     }
 
-    public function deletefolder($folder_id)    {
+    public static function deletefolder($folder_id)    {
         //throw new Exception("TODO: Check if the item belongs to the appropriate pilot.");
         $upd = "UPDATE `".TABLE_PREFIX."airmail` SET `receiver_folder`='0' WHERE `receiver_folder`='$folder_id'";
 
@@ -442,7 +442,7 @@ class MailData extends CodonData {
         return;
     }
 
-    public function editfolder($folder_id, $folder_title)   {
+    public static function editfolder($folder_id, $folder_title)   {
         //throw new Exception("TODO: Check if the item belongs to the appropriate pilot.");
         $upd = "UPDATE `".TABLE_PREFIX."airmail_folders` SET `folder_title`='$folder_title' WHERE `id`='$folder_id'";
 
@@ -456,7 +456,7 @@ class MailData extends CodonData {
         return;
     }
 
-    public function getprofilemail($pilotid)    {
+    public static function getprofilemail($pilotid)    {
         $query = "SELECT * FROM `".TABLE_PREFIX."airmail` WHERE `who_to`='$pilotid' ORDER BY `date` DESC LIMIT 2";
 
         $results = DB::get_results($query);

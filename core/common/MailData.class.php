@@ -318,7 +318,8 @@ class MailData extends CodonData {
         $query = "SELECT COUNT(*) AS total
                 FROM `".TABLE_PREFIX."airmail`
                 WHERE `read_state`=0
-                AND `who_to`='$pid'";
+                AND `who_to`='$pid'
+                AND `deleted_state` = 0";
 
         $results = DB::get_row($query);
 
